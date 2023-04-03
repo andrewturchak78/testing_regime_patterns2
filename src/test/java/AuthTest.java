@@ -1,5 +1,6 @@
 import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -10,10 +11,12 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.*;
 
 class AuthTest {
-
+@BeforeEach
+void setup(){
+    open("http://localhost:9999/");
+}
     @Test
     void shouldRegisterSuccessful() {
-        open("http://localhost:9999/");
         var registeredUser = DataRegistrator.Registration.getRegisteredUser("active");
         $("[data-test-id=login] input").val(registeredUser.getLogin());
         $("[data-test-id=password] input").val(registeredUser.getPassword());
@@ -22,7 +25,6 @@ class AuthTest {
     }
     @Test
     void shouldShowBlockedUser(){
-        open("http://localhost:9999/");
         var blockedUser = DataRegistrator.Registration.getRegisteredUser("blocked");
         $("[data-test-id=login] input").val(blockedUser.getLogin());
         $("[data-test-id=password] input").val(blockedUser.getPassword());
