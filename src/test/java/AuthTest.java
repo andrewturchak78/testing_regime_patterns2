@@ -1,31 +1,32 @@
-import io.restassured.builder.RequestSpecBuilder;
-import io.restassured.filter.log.LogDetail;
-import io.restassured.http.ContentType;
-import io.restassured.specification.RequestSpecification;
+import com.codeborne.selenide.Condition;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
-import static io.restassured.RestAssured.given;
+import java.time.Duration;
 
-// спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Selenide.*;
+
 class AuthTest {
-    private static RequestSpecification requestSpec = new RequestSpecBuilder()
-            .setBaseUri("http://localhost")
-            .setPort(9999)
-            .setAccept(ContentType.JSON)
-            .setContentType(ContentType.JSON)
-            .log(LogDetail.ALL)
-            .build();
 
-    @BeforeAll
-    static void setUpAll() {
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(new RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
+    @Test
+    void shouldRegisterSuccessful() {
+        open("http://localhost:9999/");
+        var registeredUser = DataRegistrator.Registration.getRegisteredUser("active");
+        $("[data-test-id=login] input").val(registeredUser.getLogin());
+        $("[data-test-id=password] input").val(registeredUser.getPassword());
+        $("[data-test-id=action-login]").click();
+        $x("//h2").should(text("Личный кабинет"));
     }
-    ...
-}
+    @Test
+    void shouldShowBlockedUser(){
+        open("http://localhost:9999/");
+        var blockedUser = DataRegistrator.Registration.getRegisteredUser("blocked");
+        $("[data-test-id=login] input").val(blockedUser.getLogin());
+        $("[data-test-id=password] input").val(blockedUser.getPassword());
+        $("[data-test-id=action-login]").click();
+        $("[data-test-id=error-notification] .notification__content").shouldBe(text("Ошибка! " + "Пользователь заблокирован"));
+    }
+    }
