@@ -45,4 +45,11 @@ class AuthTest {
         $("[data-test-id=action-login]").click();
         $("[data-test-id=error-notification] .notification__content").shouldBe(text("Ошибка! " + "Неверно указан логин или пароль"));
     }
+    @Test
+    void shouldWithoutUser(){
+        $("[data-test-id=login] input").val(DataRegistrator.getRandomLogin());
+        $("[data-test-id=password] input").val(DataRegistrator.getRandomPassword());
+        $("[data-test-id=action-login]").click();
+        $("[data-test-id=error-notification] .notification__content").shouldBe(text("Ошибка! " + "Неверно указан логин или пароль"));
+    }
 }
