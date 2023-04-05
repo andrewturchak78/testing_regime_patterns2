@@ -12,7 +12,9 @@ import static io.restassured.RestAssured.given;
 public class DataRegistrator {
     private DataRegistrator() {
     }
+
     private static final Faker faker = new Faker(new Locale("en"));
+
     public static String getRandomLogin() {
         String login = faker.name().firstName();
         return login;
@@ -22,6 +24,7 @@ public class DataRegistrator {
         String password = faker.internet().password();
         return password;
     }
+
     private static final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
@@ -45,7 +48,6 @@ public class DataRegistrator {
                 .statusCode(200);
 
     }
-
 
 
     public static class Registration {
